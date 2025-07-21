@@ -1,22 +1,42 @@
 import express from "express";
-import cors from "cors"
+import cors from "cors";
+import { clerkMiddleware } from "@clerk/express";
+
+import userRoutes from "../routes/user.route.js";
+
 import { ENV } from "../config/env.js";
 import { connectDB } from "../config/db.js";
-import {clerkMiddleware} from "@clerk/express"
-
 
 const app = express();
 
-//middlewares
-app.use(cors())
-app.use(express.json())
-app.use(clerkMiddleware())
+app.use(cors());
+app.use(express.json());
 
+app.use(clerkMiddleware());
 
-connectDB().then(r => app.listen(ENV.PORT, () => {
-  console.log("server is up and running on PORT:", ENV.PORT);
-}));
+app.get("/", (req, res) => res.send("Hello from server"));
 
-app.get("/",(req,res) => res.send("Hello from server"))
+//route handling
+app.use("/api/users", userRoutes);
 
+// error handling middleware
 
+const startServer = async () => {
+  try {
+    await connectDB();
+
+    // listen for local development
+    if (ENV.NODE_ENV !== "production") {
+      app.listen(ENV.PORT, () =>
+        console.log("Server is up and running on PORT:", ENV.PORT)
+      );
+    }
+  } catch (error) {
+    console.error("Failed to start server:", error.message);
+    process.exit(1);
+  }
+};
+
+startServer();
+
+// export for vercel
