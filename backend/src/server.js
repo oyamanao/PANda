@@ -21,7 +21,12 @@ app.get("/", (req, res) => res.send("Hello from server"));
 app.use("/api/users", userRoutes);
 app.use("/api/posts", postRoutes);
 
+
 // error handling middleware
+app.use((err, req, res, next) => {
+  console.error("Unhandled error:", err);
+  res.status(500).json({ error: err.message || "Internal server error" });
+});
 
 const startServer = async () => {
   try {
@@ -30,7 +35,7 @@ const startServer = async () => {
     // listen for local development
     if (ENV.NODE_ENV !== "production") {
       app.listen(ENV.PORT, () =>
-        console.log("Server is up and running on PORT:", ENV.PORT)
+        console.log("Server is up and running on PORT:", ENV.PORT," delete this line in production : http://localhost:5001/")
       );
     }
   } catch (error) {
@@ -40,5 +45,6 @@ const startServer = async () => {
 };
 
 startServer();
+
 
 // export for vercel
