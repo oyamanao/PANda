@@ -44,6 +44,7 @@ export default function Index() {
                 </View>
               )}
             </TouchableOpacity>
+
           </View>
 
           {/* Terms and Privacy */}
